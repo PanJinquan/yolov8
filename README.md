@@ -1,9 +1,11 @@
 # YOLOv8
-  这是在`Ultralytics`([YOLOv8]( https://github.com/ultralytics/ultralytics)) 的基础上，增加了模型训练一些特性：
 
-- -[x] 支持COCO数据训练
-- -[ ] 支持VOC数据训练
+这是在`Ultralytics`([YOLOv8]( https://github.com/ultralytics/ultralytics)) 的基础上，增加了模型训练一些特性：
 
+-
+    -[x] 支持COCO数据训练
+-
+    -[ ] 支持VOC数据训练
 
 ## 1.Requirements
 
@@ -41,10 +43,28 @@ else:
 
 ## 3.Train
 
-#### Instance segmentation
+#### (1)object detection
 
 ```bash
+# object detection
+#model="cfg/models/v8/yolov8s.yaml"
+#weights="data/model/pretrained/yolov8s.pt"
+#data="cfg/cocodata/coco-data-seg.yaml"
+#cfg="cfg/detect-hyp.yaml"
+python train.py --model $model --weights $weights --data $data --cfg $cfg
 
+
+```
+
+#### (2)Instance segmentation
+
+```bash
+# Instance segmentation
+model="cfg/models/v8/yolov8-seg.yaml"
+weights="data/model/pretrained/yolov8n-seg.pt"
+data="cfg/cocodata/coco-data-seg.yaml"
+cfg="cfg/segment-hyp.yaml"
+python train.py --model $model --weights $weights --data $data --cfg $cfg
 
 ```
 
@@ -60,11 +80,8 @@ else:
     ```
 
 - 关于`自动混合精度`(Automatic Mixed Precision,AMP)
-  
-  在`ultralytics.utils.checks`中会检测APM，
-  如果检查失败，则意味着系统上的AMP存在异常，可能导致NaN丢失或0 map结果，因此在训练期间AMP将被禁用
 
-
+  在`ultralytics.utils.checks`中会检测APM， 如果检查失败，则意味着系统上的AMP存在异常，可能导致NaN丢失或0 map结果，因此在训练期间AMP将被禁用
 
 ## 5.常见错误和解决方法
 
