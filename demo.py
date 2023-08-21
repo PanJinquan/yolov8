@@ -93,7 +93,9 @@ class YOLOv8(object):
 
 def parse_opt():
     image_dir = 'data/test_image'
+    image_dir = '/media/PKing/新加卷1/SDK/base-utils/data/coco/JPEGImages'
     weights = "data/model/pretrained/yolov8n-seg.pt"  # 模型文件yolov5s05_640
+    # weights = "runs1/segment/train/weights/best.pt"  # 模型文件yolov5s05_640
     out_dir = image_dir + "_result"
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=weights, help='model.pt')

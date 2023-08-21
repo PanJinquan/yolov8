@@ -5,26 +5,16 @@
     @Date   : 2023-08-15 19:30:41
     @Brief  :
 """
-# Ultralytics YOLO 🚀, AGPL-3.0 license
 import os
-from itertools import repeat
-from multiprocessing.pool import ThreadPool
-from pathlib import Path
-
-import cv2
-import numpy as np
-import torch
-import torchvision
-from tqdm import tqdm
 from ultralytics.utils import RANK, colorstr
 from ultralytics.data.dataset import YOLODataset
-from ultralytics.data.utils import HELP_URL, LOGGER, get_hash, img2label_paths, verify_image_label
+from ultralytics.data.utils import HELP_URL, LOGGER
 from pybaseutils import image_utils, file_utils, json_utils, yaml_utils
 from pybaseutils.dataloader import parser_coco_ins
 
 
 def build_coco_dataset(cfg, img_path, batch, data, mode='train', rect=False, stride=32):
-    """Build YOLO Dataset"""
+    """Build COCO Dataset"""
     return COCODataset(
         img_path=img_path,
         imgsz=cfg.imgsz,
@@ -90,7 +80,7 @@ class COCODataset(YOLODataset):
         for files_info, annos_info in zip(self.coco.files_info, self.coco.annos_info):
             im_file = os.path.join(self.coco.image_dir, files_info['file_name'])
             h, w = files_info['height'], files_info['width']
-            boxes, cls, mask, segs = self.coco.get_object_instance(annos_info, h, w)
+            boxes, cls, mask, segs = self.coco.get_object_instance(annos_info, h, w, decode=False)
             # 将(x,y,x,y)转为(x_center y_center width height)，见ultralytics.utils.instance
             cxcywh = image_utils.xyxy2cxcywh(boxes) / (w, h, w, h)
             cls = cls.reshape(-1, 1)

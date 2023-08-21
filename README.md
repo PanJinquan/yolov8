@@ -1,44 +1,74 @@
 # YOLOv8
 
+Ultralytics YOLOv8 Docs:
+
 - https://github.com/ultralytics/ultralytics
 - https://docs.ultralytics.com/tasks/detect/
 - https://docs.ultralytics.com/tasks/segment
 - https://docs.ultralytics.com/tasks/pose/
+- 训练方法： https://github.com/ultralytics/ultralytics/blob/main/docs/modes/train.md
 
-## install
+## 1.Requirements
 
-- pip install ultralytics
+- [requirements](requirements.txt),use `pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
+- pip install ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-## 修改读取配置文件的根目录
+```bash
+# Clone the ultralytics repository
+git clone https://github.com/ultralytics/ultralytics
 
-在
+# Navigate to the cloned directory
+cd ultralytics
 
-```python
-from ultralytics.utils import DEFAULT_CFG_PATH
+# Install the package in editable mode for development
+pip install -e .
 ```
 
-修改
+## 2.Integrations
+
+### (1) 支持COCO数据集训练`cocodataset`
+
+- 修改`DetectionTrainer`中`build_dataset`
 
 ```python
-# ROOT = FILE.parents[1]  # YOLO
-ROOT = Path(os.getcwd())
-print("ROOT{}".format(ROOT))
+from ultralytics.models.yolo.detect.train import DetectionTrainer
+
+gs = max(int(de_parallel(self.model).stride.max() if self.model else 0), 32)
+if self.data.get('data_type') == "COCO":
+    from ultralytics.libs.dataset.cocodataset import build_coco_dataset
+
+    return build_coco_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+else:
+    return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
 ```
 
-## 增加数据集
+## 3.Train
 
-在
+#### Instance segmentation
 
-```python
-from ultralytics.models.yolo.detect import DetectionTrainer
+```bash
+
+
 ```
 
-# 修改为
+## 4.使用说明
 
-```python
-...
-from libs.dataset.cocodataset import build_coco_dataset
+- `ultralytics`会根据模型文件名称，来判断模型属于`n,s,m,l,x`，如果判断失败则默认为`n`,见`ultralytics/nn/tasks.py`
+    ```yaml
+      n: [ 0.33, 0.25, 1024 ]
+      s: [ 0.33, 0.50, 1024 ]
+      m: [ 0.67, 0.75, 768 ]
+      l: [ 1.00, 1.00, 512 ]
+      x: [ 1.00, 1.25, 512 ]
+    ```
 
-# return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
-return build_coco_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
-```
+- 关于`自动混合精度`(Automatic Mixed Precision,AMP)
+  
+  在`ultralytics.utils.checks`中会检测APM，
+  如果检查失败，则意味着系统上的AMP存在异常，可能导致NaN丢失或0 map结果，因此在训练期间AMP将被禁用
+
+
+
+## 5.常见错误和解决方法
+
+![常见错误和解决方法](docs/README.md)
