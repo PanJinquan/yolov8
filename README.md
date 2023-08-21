@@ -1,12 +1,9 @@
 # YOLOv8
+  这是在`Ultralytics`([YOLOv8]( https://github.com/ultralytics/ultralytics)) 的基础上，增加了模型训练一些特性：
 
-Ultralytics YOLOv8 Docs:
+- -[x] 支持COCO数据训练
+- -[ ] 支持VOC数据训练
 
-- https://github.com/ultralytics/ultralytics
-- https://docs.ultralytics.com/tasks/detect/
-- https://docs.ultralytics.com/tasks/segment
-- https://docs.ultralytics.com/tasks/pose/
-- 训练方法： https://github.com/ultralytics/ultralytics/blob/main/docs/modes/train.md
 
 ## 1.Requirements
 
@@ -71,4 +68,9 @@ else:
 
 ## 5.常见错误和解决方法
 
-![常见错误和解决方法](docs/README.md)
+- [常见错误和解决方法](docs/README.md)
+- https://github.com/ultralytics/ultralytics
+- https://docs.ultralytics.com/tasks/detect/
+- https://docs.ultralytics.com/tasks/segment
+- https://docs.ultralytics.com/tasks/pose/
+- 训练方法： https://github.com/ultralytics/ultralytics/blob/main/docs/modes/train.md
