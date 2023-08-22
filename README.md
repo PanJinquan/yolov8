@@ -2,10 +2,9 @@
 
 这是在`Ultralytics`([YOLOv8]( https://github.com/ultralytics/ultralytics)) 的基础上，增加了模型训练一些特性：
 
--
-    -[x] 支持COCO数据训练
--
-    -[ ] 支持VOC数据训练
+- [x] 支持COCO数据训练
+- [ ] 支持VOC数据训练
+- [ ] 支持TensorRT推理
 
 ## 1.Requirements
 
