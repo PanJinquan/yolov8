@@ -17,26 +17,27 @@ import numpy as np
 import cv2
 from ultralytics import YOLO
 from ultralytics.engine.results import Results
-from PIL import Image
 from pybaseutils import image_utils, file_utils, color_utils
 
 
 class YOLOv8(object):
     def __init__(self, weights):
-        # 加载模型
+        """
+        :param weights:
+        """
         self.model = YOLO(weights)  # load an official model
         self.names = self.model.names
         print("weights   :{}".format(weights))
         print("name      :{}".format(self.names))
 
-    def predict_segment(self, image, vis=True):
+    def inference(self, image, vis=True):
         """
         :param image:
         :return:
         """
         # from ultralytics.models.yolo.segment.predict import SegmentationPredictor# postprocess
         results = self.model.predict(source=image, save=False)
-        if vis: self.show_result(results)
+        if vis: self.draw_result(results)
         return results
 
     def detect_image_dir(self, image_dir, out_dir=None, vis=True):
@@ -46,7 +47,7 @@ class YOLOv8(object):
         for file in dataset:
             image = cv2.imread(file)  # BGR
             # image = Image.open(file)
-            results = self.predict_segment(image=image)
+            results = self.inference(image=image)
             # from ndarray
             # im2 = cv2.imread("bus.jpg")
             # results = model.predict(source=im2, save=True, save_txt=True)  # save predictions as labels
@@ -54,48 +55,58 @@ class YOLOv8(object):
             # from list of PIL/ndarray
             # results = model.predict(source=[im1, im2])
 
-    def show_result(self, results: Results):
+    def draw_result(self, results: Results, vis=True):
         for r in results:
             image = r.orig_img
             h, w = image.shape[:2]
             boxes = np.asarray(r.boxes.xyxy.cpu().numpy(), dtype=np.float32)
             label = np.asarray(r.boxes.cls.cpu().numpy(), dtype=np.int32)
-            masks = np.asarray(r.masks.masks.cpu().numpy(), dtype=np.int32)
-            segms = r.masks.segments
-            for i in range(len(label)):
-                masks[i, :, :] = masks[i, :, :] * (label[i] + 1)
-                segms[i] = [np.asarray(segms[i] * (w, h), dtype=np.int32)]
-            mask = np.asarray(np.max(masks, axis=0), dtype=np.uint8)
-            mask = image_utils.resize_image(mask, size=(w, h), interpolation=cv2.INTER_NEAREST)
-            self.show_target_mask_image(image, mask, boxes, label, class_name=self.names)
-            # self.show_target_segments_image(image, segms, boxes, label, class_name=self.names)
+            if r.masks is None:
+                self.draw_dets_result(image, boxes, label, class_name=self.names, vis=vis)
+            else:
+                masks = np.asarray(r.masks.masks.cpu().numpy(), dtype=np.int32)
+                segms = r.masks.segments
+                for i in range(len(label)):
+                    masks[i, :, :] = masks[i, :, :] * (label[i] + 1)
+                    segms[i] = [np.asarray(segms[i] * (w, h), dtype=np.int32)]
+                mask = np.asarray(np.max(masks, axis=0), dtype=np.uint8)
+                mask = image_utils.resize_image(mask, size=(w, h), interpolation=cv2.INTER_NEAREST)
+                self.draw_mask_result(image, mask, boxes, label, class_name=self.names, vis=vis)
+                # self.draw_segs_result(image, segms, boxes, label, class_name=self.names,vis=vis)
         return results
 
     @staticmethod
-    def show_target_mask_image(image, mask, boxes, labels, class_name=[], thickness=2, fontScale=1.0):
-        mask = np.asarray(mask, np.uint8)
+    def draw_dets_result(image, boxes, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
+        image = image_utils.draw_image_bboxes_labels(image, boxes, labels, class_name=class_name,
+                                                     thickness=thickness, fontScale=fontScale)
+        if vis: image_utils.cv_show_image("image", image, delay=0)
+        return image
+
+    @staticmethod
+    def draw_mask_result(image, mask, boxes, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
         color_image, color_mask = color_utils.decode_color_image_mask(image, mask)
         color_image = image_utils.draw_image_bboxes_labels(color_image, boxes, labels, class_name=class_name,
                                                            thickness=thickness, fontScale=fontScale)
         vis_image = image_utils.image_hstack([image, mask, color_image, color_mask])
-        image_utils.cv_show_image("image", color_image, delay=10)
-        image_utils.cv_show_image("vis_image ", vis_image)
+        if vis:
+            image_utils.cv_show_image("image", color_image, delay=10)
+            image_utils.cv_show_image("vis_image ", vis_image)
         return vis_image
 
     @staticmethod
-    def show_target_segments_image(image, segms, boxes, labels, class_name=[], thickness=2, fontScale=1.0):
+    def draw_segs_result(image, segms, boxes, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
         color_image = image_utils.draw_image_contours(image, segms, thickness=2)
         color_image = image_utils.draw_image_bboxes_labels(color_image, boxes, labels, class_name=class_name,
                                                            thickness=thickness, fontScale=fontScale)
-        image_utils.cv_show_image("image", color_image)
+        if vis: image_utils.cv_show_image("image", color_image)
         return image
 
 
 def parse_opt():
     image_dir = 'data/test_image'
     image_dir = '/media/PKing/新加卷1/SDK/base-utils/data/coco/JPEGImages'
-    weights = "data/model/pretrained/yolov8n-seg.pt"  # 模型文件yolov5s05_640
-    # weights = "runs1/segment/train/weights/best.pt"  # 模型文件yolov5s05_640
+    weights = "data/model/pretrained/yolov8n-seg.pt"
+    # weights = "output/detect/train/weights/best.pt"
     out_dir = image_dir + "_result"
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=weights, help='model.pt')
