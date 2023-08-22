@@ -10,12 +10,12 @@ from ultralytics.utils import RANK, colorstr
 from ultralytics.data.dataset import YOLODataset
 from ultralytics.data.utils import HELP_URL, LOGGER
 from pybaseutils import image_utils, file_utils, json_utils, yaml_utils
-from pybaseutils.dataloader import parser_coco_ins
+from pybaseutils.dataloader import parser_voc
 
 
-def build_coco_dataset(cfg, img_path, batch, data, mode='train', rect=False, stride=32):
+def build_voc_dataset(cfg, img_path, batch, data, mode='train', rect=False, stride=32):
     """Build COCO Dataset"""
-    return COCODataset(
+    return VOCDataset(
         img_path=img_path,
         imgsz=cfg.imgsz,
         batch_size=batch,
@@ -34,7 +34,7 @@ def build_coco_dataset(cfg, img_path, batch, data, mode='train', rect=False, str
         fraction=cfg.fraction if mode == 'train' else 1.0)
 
 
-class COCODataset(YOLODataset):
+class VOCDataset(YOLODataset):
     """
     Dataset class for loading object detection and/or segmentation labels in YOLO format.
 
@@ -55,16 +55,16 @@ class COCODataset(YOLODataset):
         self.class_dict = {n: i for i, n in data['names'].items()}
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
         anno_file = kwargs["img_path"]
-        self.coco = parser_coco_ins.CocoInstances(anno_file, image_dir=None, class_name=self.class_dict, check=False)
+        self.voc = parser_voc.VOCDatasets(filename=anno_file, image_dir=None, class_name=self.class_dict, check=True)
         assert not (self.use_segments and self.use_keypoints), 'Can not use both segments and keypoints.'
         super().__init__(*args, data=data, use_segments=use_segments, use_keypoints=use_keypoints, **kwargs)
 
     def get_img_files(self, *args, **kwargs):
         """Read image files."""
-        files_info = self.coco.get_files_info()
+        files_info = self.voc.image_ids()
         file_list = []
-        for data in files_info:
-            file = os.path.join(self.coco.image_dir, data['file_name'])
+        for file_name in files_info:
+            file = os.path.join(self.voc.image_dir, file_name)
             file_list.append(file)
         return file_list
 
@@ -77,20 +77,22 @@ class COCODataset(YOLODataset):
                - `ltwh` means left top and width, height(coco format)
         """
         labels = []
-        for files_info, annos_info in zip(self.coco.files_info, self.coco.annos_info):
-            im_file = os.path.join(self.coco.image_dir, files_info['file_name'])
-            h, w = files_info['height'], files_info['width']
-            boxes, cls, mask, segs = self.coco.get_object_instance(annos_info, h, w, decode=False)
+        for i in range(len(self.voc.image_ids)):
+            data_info = self.voc.__getitem__(i)
+            im_file = data_info['image_file']
+            w, h = data_info['size']
+            targets = data_info["target"]
+            boxes, cls = targets[:, 0:4], targets[:, 4:5]
             # 将(x,y,x,y)转为(x_center y_center width height)，见ultralytics.utils.instance
             cxcywh = image_utils.xyxy2cxcywh(boxes) / (w, h, w, h)
             cls = cls.reshape(-1, 1)
-            segs = [s[0] / (w, h) for s in segs]
+            # segs = [s[0] / (w, h) for s in segs]
             item = {
                 "im_file": im_file,
                 "shape": (h, w),
                 "cls": cls,
                 "bboxes": cxcywh,
-                "segments": segs,
+                "segments": None,
                 "keypoints": None,
                 "normalized": True,
                 "bbox_format": "xywh",  # YOLO中xywh指的是(x_center y_center width height)

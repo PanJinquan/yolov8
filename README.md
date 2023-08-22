@@ -1,9 +1,9 @@
 # YOLOv8
 
-这是在`Ultralytics`([YOLOv8]( https://github.com/ultralytics/ultralytics)) 的基础上，增加了模型训练一些特性：
+这是在`Ultralytics`([YOLOv8]( https://github.com/ultralytics/ultralytics)) 的基础上，增加了一些特性：
 
 - [x] 支持COCO数据训练
-- [ ] 支持VOC数据训练
+- [x] 支持VOC数据训练
 - [ ] 支持TensorRT推理
 
 ## 1.Requirements
@@ -24,7 +24,7 @@ pip install -e .
 
 ## 2.Integrations
 
-### (1) 支持COCO数据集训练`cocodataset`
+### (1) 支持COCO和VOC数据集训练
 
 - 修改`DetectionTrainer`中`build_dataset`
 
@@ -33,9 +33,13 @@ from ultralytics.models.yolo.detect.train import DetectionTrainer
 
 gs = max(int(de_parallel(self.model).stride.max() if self.model else 0), 32)
 if self.data.get('data_type') == "COCO":
-    from ultralytics.libs.dataset.cocodataset import build_coco_dataset
+    from libs.dataset.cocodataset import build_coco_dataset
 
     return build_coco_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+elif self.data.get('data_type') == "VOC":
+    from libs.dataset.vocdataset import build_voc_dataset
+
+    return build_voc_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
 else:
     return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
 ```
