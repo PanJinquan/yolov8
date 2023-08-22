@@ -78,12 +78,13 @@ class Trainer(object):
 def parse_opt():
     # model = "cfg/models/v8/yolov8-seg.yaml"
     # weights = "data/model/pretrained/yolov8n-seg.pt"
-    # data = "cfg/cocodata/coco-data-seg.yaml"
+    # data = "cfg/datasets/coco-data-seg.yaml"
     # cfg = "cfg/segment-hyp.yaml"
     #
     model = "cfg/models/v8/yolov8s.yaml"
     weights = "data/model/pretrained/yolov8s.pt"
-    data = "cfg/cocodata/coco-data-seg.yaml"
+    # data = "cfg/datasets/coco-data-seg.yaml"
+    data = "cfg/datasets/voc-data-det.yaml"
     cfg = "cfg/detect-hyp.yaml"
 
     parser = argparse.ArgumentParser()

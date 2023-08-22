@@ -61,11 +61,10 @@ class VOCDataset(YOLODataset):
 
     def get_img_files(self, *args, **kwargs):
         """Read image files."""
-        files_info = self.voc.image_ids()
         file_list = []
-        for file_name in files_info:
-            file = os.path.join(self.voc.image_dir, file_name)
-            file_list.append(file)
+        for i in range(len(self.voc.image_ids)):
+            image_file, annotation_file = self.voc.get_image_anno_file(i)
+            file_list.append(image_file)
         return file_list
 
     def get_labels(self):
@@ -92,7 +91,7 @@ class VOCDataset(YOLODataset):
                 "shape": (h, w),
                 "cls": cls,
                 "bboxes": cxcywh,
-                "segments": None,
+                "segments": [],
                 "keypoints": None,
                 "normalized": True,
                 "bbox_format": "xywh",  # YOLO中xywh指的是(x_center y_center width height)
