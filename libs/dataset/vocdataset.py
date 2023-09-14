@@ -60,11 +60,11 @@ class VOCDataset(YOLODataset):
         super().__init__(*args, data=data, use_segments=use_segments, use_keypoints=use_keypoints, **kwargs)
 
     def get_img_files(self, *args, **kwargs):
-        """Read image files."""
+        """Read image files. 返回空即可"""
         file_list = []
-        for i in range(len(self.voc.image_ids)):
-            image_file, annotation_file = self.voc.get_image_anno_file(i)
-            file_list.append(image_file)
+        # for i in range(len(self.voc.image_ids)):
+        #     image_file, annotation_file = self.voc.get_image_anno_file(i)
+        #     file_list.append(image_file)
         return file_list
 
     def get_labels(self):

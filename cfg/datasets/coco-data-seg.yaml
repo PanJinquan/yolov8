@@ -10,18 +10,20 @@
 # Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
 data_type: "COCO"
 path: ""  # dataset root dir
-#train: "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_test2017.json"
-#val: "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_val2017.json"
-train: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/train2017/instances_train2017.json"
+train: "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_val2017.json"
+val: "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_val2017.json"
+#train: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/train2017/instances_train2017.json"
 #train: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/val2017/instances_val2017.json"
-val: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/val2017/instances_val2017.json"
+#val: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/val2017/instances_val2017.json"
 test:  # test images (optional)
 
 # Classes
-names:
-  0: dog
-  1: car
-  2: person
+#names:
+#  0: dog
+#  1: car
+#  2: person
+
+names: { "0": 'dog,car',"1": 'person' }
 
 
 # Download script/URL (optional)

@@ -52,20 +52,28 @@ class COCODataset(YOLODataset):
         self.unique = False
         self.use_segments = use_segments
         self.use_keypoints = use_keypoints
-        self.class_dict = {n: i for i, n in data['names'].items()}
+        self.class_dict = self.parser_classes(data['names'])
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
         anno_file = kwargs["img_path"]
-        self.coco = parser_coco_ins.CocoInstances(anno_file, image_dir=None, class_name=self.class_dict, check=False)
+        self.coco = parser_coco_ins.CocoInstance(anno_file, image_dir=None, class_name=self.class_dict, check=False)
         assert not (self.use_segments and self.use_keypoints), 'Can not use both segments and keypoints.'
         super().__init__(*args, data=data, use_segments=use_segments, use_keypoints=use_keypoints, **kwargs)
 
+    def parser_classes(self, names: dict):
+        class_dict = {}
+        for i, ns in names.items():
+            ns = ns.split(",")
+            for n in ns:
+                class_dict[n] = i
+        return class_dict
+
     def get_img_files(self, *args, **kwargs):
-        """Read image files."""
-        files_info = self.coco.get_files_info()
+        """Read image files. 返回空即可"""
         file_list = []
-        for data in files_info:
-            file = os.path.join(self.coco.image_dir, data['file_name'])
-            file_list.append(file)
+        # files_info = self.coco.get_files_info()
+        # for data in files_info:
+        #     file = os.path.join(self.coco.image_dir, data['file_name'])
+        #     file_list.append(file)
         return file_list
 
     def get_labels(self):
