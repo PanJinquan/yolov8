@@ -23,7 +23,7 @@ test:  # test images (optional)
 #  1: car
 #  2: person
 
-names: { "0": 'dog,car',"1": 'person' }
+names: ['dog,car','person']
 
 
 # Download script/URL (optional)
