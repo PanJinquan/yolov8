@@ -24,13 +24,12 @@ import argparse
 import numpy as np
 import cv2
 import ultralytics
-
 from easydict import EasyDict
 from ultralytics import YOLO
 from ultralytics.utils import downloads, ROOT, DEFAULT_CFG_PATH
-from ultralytics.models.yolo.detect import DetectionTrainer
-from pybaseutils import image_utils, file_utils, yaml_utils
+from ultralytics.models.yolo.detect import DetectionTrainer  # build_dataset
 from ultralytics import settings
+from pybaseutils import image_utils, file_utils, yaml_utils
 
 
 class Trainer(object):
@@ -88,11 +87,11 @@ def parse_opt():
     cfg = "cfg/detect-hyp.yaml"
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default=model, help='model.yaml path')
-    parser.add_argument('--weights', type=str, default=weights, help='model.pt')
-    parser.add_argument('--data', type=str, default=data, help='dataset')
-    parser.add_argument('--cfg', type=str, default=cfg, help='dataset')
-    parser.add_argument('--output', type=str, default="output", help='dataset')
+    parser.add_argument('--model', type=str, default=model, help='model *.yaml file')
+    parser.add_argument('--weights', type=str, default=weights, help='model weights file')
+    parser.add_argument('--data', type=str, default=data, help='dta *.yaml file')
+    parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
+    parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()
     return opt
 

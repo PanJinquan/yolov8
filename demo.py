@@ -17,20 +17,29 @@ import numpy as np
 import cv2
 from ultralytics import YOLO
 from ultralytics.engine.results import Results
-from pybaseutils import image_utils, file_utils, color_utils
+from pybaseutils import image_utils, file_utils, color_utils, time_utils
 
 
 class YOLOv8(object):
-    def __init__(self, weights):
+    def __init__(self, weights, export=False):
         """
         :param weights:
         """
-        self.model = YOLO(weights)  # load an official model
+        self.model = YOLO(weights)  # load an  model
+        if export: self.export_model()
         self.names = self.model.names
         print("weights   :{}".format(weights))
         print("name      :{}".format(self.names))
 
-    def inference(self, image, vis=True):
+    def export_model(self):
+        """
+        https://docs.ultralytics.com/modes/export/
+        :return:
+        """
+        # self.model.export(format='onnx', simplify=True, dynamic=False)  # ONNX
+        self.model.export(format='engine', simplify=True, dynamic=False, device=0)  # TensorRT
+
+    def inference(self, image, vis=False):
         """
         :param image:
         :return:
@@ -47,7 +56,7 @@ class YOLOv8(object):
         for file in dataset:
             image = cv2.imread(file)  # BGR
             # image = Image.open(file)
-            results = self.inference(image=image)
+            results = self.inference(image=image, vis=vis)
             # from ndarray
             # im2 = cv2.imread("bus.jpg")
             # results = model.predict(source=im2, save=True, save_txt=True)  # save predictions as labels
@@ -61,8 +70,9 @@ class YOLOv8(object):
             h, w = image.shape[:2]
             boxes = np.asarray(r.boxes.xyxy.cpu().numpy(), dtype=np.float32)
             label = np.asarray(r.boxes.cls.cpu().numpy(), dtype=np.int32)
+            score = np.asarray(r.boxes.conf.cpu().numpy(), dtype=np.float32)
             if r.masks is None:
-                self.draw_dets_result(image, boxes, label, class_name=self.names, vis=vis)
+                self.draw_dets_result(image, boxes, score, label, class_name=self.names, vis=vis)
             else:
                 masks = np.asarray(r.masks.masks.cpu().numpy(), dtype=np.int32)
                 segms = r.masks.segments
@@ -71,22 +81,22 @@ class YOLOv8(object):
                     segms[i] = [np.asarray(segms[i] * (w, h), dtype=np.int32)]
                 mask = np.asarray(np.max(masks, axis=0), dtype=np.uint8)
                 mask = image_utils.resize_image(mask, size=(w, h), interpolation=cv2.INTER_NEAREST)
-                self.draw_mask_result(image, mask, boxes, label, class_name=self.names, vis=vis)
-                # self.draw_segs_result(image, segms, boxes, label, class_name=self.names,vis=vis)
+                self.draw_mask_result(image, mask, boxes, score, label, class_name=self.names, vis=vis)
+                # self.draw_segs_result(image, segms, boxes,score, label, class_name=self.names,vis=vis)
         return results
 
     @staticmethod
-    def draw_dets_result(image, boxes, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
-        image = image_utils.draw_image_bboxes_labels(image, boxes, labels, class_name=class_name,
-                                                     thickness=thickness, fontScale=fontScale)
+    def draw_dets_result(image, boxes, score, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
+        image = image_utils.draw_image_detection_boxes(image, boxes, score, labels, class_name=class_name,
+                                                       thickness=thickness, fontScale=fontScale)
         if vis: image_utils.cv_show_image("image", image, delay=0)
         return image
 
     @staticmethod
-    def draw_mask_result(image, mask, boxes, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
+    def draw_mask_result(image, mask, boxes, score, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
         color_image, color_mask = color_utils.decode_color_image_mask(image, mask)
-        color_image = image_utils.draw_image_bboxes_labels(color_image, boxes, labels, class_name=class_name,
-                                                           thickness=thickness, fontScale=fontScale)
+        color_image = image_utils.draw_image_detection_boxes(color_image, boxes, score, labels, class_name=class_name,
+                                                             thickness=thickness, fontScale=fontScale)
         vis_image = image_utils.image_hstack([image, mask, color_image, color_mask])
         if vis:
             image_utils.cv_show_image("image", color_image, delay=10)
@@ -94,19 +104,27 @@ class YOLOv8(object):
         return vis_image
 
     @staticmethod
-    def draw_segs_result(image, segms, boxes, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
+    def draw_segs_result(image, segms, boxes, score, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
         color_image = image_utils.draw_image_contours(image, segms, thickness=2)
         color_image = image_utils.draw_image_bboxes_labels(color_image, boxes, labels, class_name=class_name,
                                                            thickness=thickness, fontScale=fontScale)
         if vis: image_utils.cv_show_image("image", color_image)
         return image
 
+    def performance(self, file="data/test.jpg", iterate=100):
+        image = cv2.imread(file)  # BGR
+        results = self.inference(image=image)
+        for i in range(iterate):
+            with time_utils.Performance("Performance"):
+                results = self.inference(image=image.copy(), vis=False)
+
 
 def parse_opt():
     image_dir = 'data/test_image'
     image_dir = '/media/PKing/新加卷1/SDK/base-utils/data/coco/JPEGImages'
-    weights = "data/model/pretrained/yolov8n-seg.pt"
-    # weights = "output/detect/train/weights/best.pt"
+    # weights = "data/model/pretrained/yolov8n-seg.pt"
+    weights = "output/detect/train/weights/best.pt"
+    # weights = "output/detect/train/weights/best.engine"
     out_dir = image_dir + "_result"
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=weights, help='model.pt')
@@ -120,3 +138,4 @@ if __name__ == "__main__":
     opt = parse_opt()
     d = YOLOv8(weights=opt.weights)
     d.detect_image_dir(opt.image_dir, opt.out_dir)
+    # d.performance()

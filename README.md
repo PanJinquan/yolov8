@@ -10,6 +10,7 @@
 
 - [requirements](requirements.txt),use `pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
 - pip install ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
+- ultralytics commit id : 6da8f7f51e985cb3b4f42043f1791fe8a7368c9b
 
 ```bash
 # Clone the ultralytics repository
@@ -20,6 +21,11 @@ cd ultralytics
 
 # Install the package in editable mode for development
 pip install -e .
+```
+
+- Install TensorRT
+```bash
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple nvidia-pyindex nvidia-tensorrt
 ```
 
 ## 2.Integrations
