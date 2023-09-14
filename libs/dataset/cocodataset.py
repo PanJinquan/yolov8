@@ -55,7 +55,7 @@ class COCODataset(YOLODataset):
         self.class_dict = self.parser_classes(data['names'])
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
         anno_file = kwargs["img_path"]
-        self.coco = parser_coco_ins.CocoInstance(anno_file, image_dir=None, class_name=self.class_dict, check=False)
+        self.coco = parser_coco_ins.CocoInstances(anno_file, image_dir=None, class_name=self.class_dict, decode=False)
         assert not (self.use_segments and self.use_keypoints), 'Can not use both segments and keypoints.'
         super().__init__(*args, data=data, use_segments=use_segments, use_keypoints=use_keypoints, **kwargs)
 
@@ -85,10 +85,13 @@ class COCODataset(YOLODataset):
                - `ltwh` means left top and width, height(coco format)
         """
         labels = []
-        for files_info, annos_info in zip(self.coco.files_info, self.coco.annos_info):
-            im_file = os.path.join(self.coco.image_dir, files_info['file_name'])
-            h, w = files_info['height'], files_info['width']
-            boxes, cls, mask, segs = self.coco.get_object_instance(annos_info, h, w, decode=False)
+        # for files_info, annos_info in zip(self.coco.files_info, self.coco.annos_info):
+        for i in range(len(self.coco.image_ids)):
+            data_info = self.coco.__getitem__(i)
+            im_file = data_info["image_file"]
+            w, h = data_info['size']
+            # boxes, cls, mask, segs = self.coco.get_object_instance(annos_info, h, w, decode=False)
+            boxes, cls, mask, segs = data_info['boxes'], data_info['label'], data_info['mask'], data_info['segs']
             # 将(x,y,x,y)转为(x_center y_center width height)，见ultralytics.utils.instance
             cxcywh = image_utils.xyxy2cxcywh(boxes) / (w, h, w, h)
             cls = cls.reshape(-1, 1)

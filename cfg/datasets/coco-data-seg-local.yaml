@@ -11,12 +11,10 @@
 data_type: "COCO"
 path: ""  # dataset root dir
 train:
-  - "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_val2017.json"
-  - "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_val2017.json"
-val: "/home/PKing/nasdata/dataset/face_person/COCO/val2017/instances_val2017.json"
-#train: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/train2017/instances_train2017.json"
-#train: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/val2017/instances_val2017.json"
-#val: "/nasdata/atp/data/panjinquan/dataset/face_person/COCO/val2017/instances_val2017.json"
+  - "/media/PKing/新加卷1/SDK/base-utils/data/coco/coco_ins.json"
+  - "/media/PKing/新加卷1/SDK/base-utils/data/coco/coco_ins.json"
+  - "/media/PKing/新加卷1/SDK/base-utils/data/coco/coco_ins.json"
+val: "/media/PKing/新加卷1/SDK/base-utils/data/coco/coco_ins.json"
 test:  # test images (optional)
 
 # Classes
