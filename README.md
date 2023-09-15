@@ -71,7 +71,7 @@ DDP多卡训练时，Argument命令行参数会失效：
 
 ## 3.Train
 
-#### (1)object detection
+### (1)object detection
 
 ```bash
 # object detection
@@ -84,7 +84,7 @@ python train.py --model $model --weights $weights --data $data --cfg $cfg
 
 ```
 
-#### (2)Instance segmentation
+### (2)Instance segmentation
 
 ```bash
 # Instance segmentation
