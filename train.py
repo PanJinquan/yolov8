@@ -1,7 +1,7 @@
 # -*-coding: utf-8 -*-
 """
     @Author : PKing
-    @E-mail : 
+    @E-mail :
     @Date   : 2023-08-15 13:48:21
     @Brief  :
 """
@@ -45,11 +45,13 @@ class Trainer(object):
         :param opt:
         """
         self.opt = EasyDict(opt.__dict__)
-        self.config: dict = yaml_utils.load_config(self.opt.cfg)
-        self.config.update({
+        self.device = str(self.opt.device).split(",")
+        self.device = [int(i) for i in self.device]
+        self.hyper_params: dict = yaml_utils.load_config(self.opt.cfg)
+        self.hyper_params.update({
             "data": self.opt.data,
             "model": self.opt.model,
-            "device": str(self.opt.device).split(","),
+            "device": self.device,
             "batch": int(self.opt.batch),
         })
         self.env = {'settings_version': '0.0.4',
@@ -64,7 +66,7 @@ class Trainer(object):
         print("settings env          :{}".format(self.env))
         print("ROOT                  :{}".format(ROOT))
         print("DEFAULT_CFG_PATH      :{}".format(DEFAULT_CFG_PATH))
-        print("GITHUB_ASSET_STEMS    :{}".format(downloads.GITHUB_ASSET_STEMS))
+        print("GITHUB_ASSET_STEMS    :{}".format(downloads.GITHUB_ASSETS_STEMS))
         print("model num class       :{}".format(len(self.names)))
         print("parser argument       :{}".format(self.opt))
 
@@ -73,15 +75,15 @@ class Trainer(object):
         model.train(data="config.yaml", epochs=100,  imgsz=640, batch=16, name=task_name, device=[0,1])
         :return:
         """
-        self.model.train(**self.config)
+        self.model.train(**self.hyper_params)
 
 
 def parse_opt():
     model = "cfg/models/v8/yolov8-seg.yaml"
     weights = "data/model/pretrained/yolov8n-seg.pt"
     # data = "cfg/datasets/coco-data-seg.yaml"
-    # data = "cfg/datasets/coco-aije-seg.yaml"
-    data = "cfg/datasets/coco-data-seg-local.yaml"
+    data = "cfg/datasets/coco-aije-seg.yaml"
+    # data = "cfg/datasets/coco-data-seg-local.yaml"
     cfg = "cfg/segment-hyp.yaml"
     #
     # model = "cfg/models/v8/yolov8s.yaml"
@@ -96,7 +98,7 @@ def parse_opt():
     parser.add_argument('--data', type=str, default=data, help='dta *.yaml file')
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
     parser.add_argument('--batch', default=8, type=int, help='batch size')
-    parser.add_argument('--device', default="0", type=str, help='GPU ID,--device=0,1,2')
+    parser.add_argument('--device', default="4,5", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')
     parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()

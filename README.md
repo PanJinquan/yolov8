@@ -24,6 +24,7 @@ pip install -e .
 ```
 
 - Install TensorRT
+
 ```bash
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple nvidia-pyindex nvidia-tensorrt
 ```
@@ -48,7 +49,24 @@ elif self.data.get('data_type') == "VOC":
     return build_voc_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
 else:
     return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+
 ```
+
+### (2) DDP ADD Argument
+
+DDP多卡训练时，Argument命令行参数会失效：
+- 解决方法1：使用单卡训练，Argument命令行参数可以正常使用
+  ```bash
+  python train.py --batch 8 # DDP多卡训练时，Argument命令行参数会失效,单卡训练正常
+  ```
+- 解决方法2：不使用命令行，在`train.py`设置所有参数的默认值,如：
+  ```bash
+  parser.add_argument('--batch', default=8, type=int, help='batch size')
+  ```
+- 解决方法3：参考issues：https://github.com/ultralytics/ultralytics/pull/4362
+  ```bash
+  cmd = [sys.executable, '-m', dist_cmd, '--nproc_per_node', f'{world_size}', '--master_port', f'{port}', file, *sys.argv[1:]]
+  ```
 
 ## 3.Train
 

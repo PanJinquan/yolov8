@@ -11,12 +11,12 @@
 data_type: "COCO"
 path: ""  # dataset root dir
 train:
-  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/train_coco_instance.json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v2/train_coco_instance.json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v3/train_coco_instance.json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v4/train_coco_instance.json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/train_coco_instance.json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v2/train_coco_instance.json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v3/train_coco_instance.json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v4/train_coco_instance.json"
 
-val: "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/val_coco_instance.json"
+val: "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/val_coco_instance.json"
 test:  # test images (optional)
 
 # Classes
