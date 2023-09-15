@@ -53,6 +53,7 @@ class Trainer(object):
             "model": self.opt.model,
             "device": self.device,
             "batch": int(self.opt.batch),
+            "epochs": int(self.opt.epochs),
         })
         self.env = {'settings_version': '0.0.4',
                     'datasets_dir': '',
@@ -79,6 +80,10 @@ class Trainer(object):
 
 
 def parse_opt():
+    """
+    DDP多卡训练时，Argument命令行参数会失效
+    :return:
+    """
     model = "cfg/models/v8/yolov8-seg.yaml"
     weights = "data/model/pretrained/yolov8n-seg.pt"
     # data = "cfg/datasets/coco-data-seg.yaml"
@@ -92,13 +97,14 @@ def parse_opt():
     # data = "cfg/datasets/voc-data-det.yaml"
     # cfg = "cfg/detect-hyp.yaml"
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Train")
     parser.add_argument('--model', type=str, default=model, help='model *.yaml file')
     parser.add_argument('--weights', type=str, default=weights, help='model weights file')
     parser.add_argument('--data', type=str, default=data, help='dta *.yaml file')
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
-    parser.add_argument('--batch', default=8, type=int, help='batch size')
-    parser.add_argument('--device', default="4,5", type=str, help='GPU ID,--device=0,1,2')
+    parser.add_argument('--batch', default=64, type=int, help='batch size')
+    parser.add_argument('--epochs', default=300, type=int, help='number of epochs to train for')
+    parser.add_argument('--device', default="3,4,5,6", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')
     parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()

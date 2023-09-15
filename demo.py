@@ -88,7 +88,7 @@ class YOLOv8(object):
     @staticmethod
     def draw_dets_result(image, boxes, score, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
         image = image_utils.draw_image_detection_boxes(image, boxes, score, labels, class_name=class_name,
-                                                       thickness=thickness, fontScale=fontScale)
+                                                       thickness=thickness, fontScale=fontScale, drawType="chinese")
         if vis: image_utils.cv_show_image("image", image, delay=0)
         return image
 
@@ -96,7 +96,8 @@ class YOLOv8(object):
     def draw_mask_result(image, mask, boxes, score, labels, class_name=[], thickness=2, fontScale=1.0, vis=True):
         color_image, color_mask = color_utils.decode_color_image_mask(image, mask)
         color_image = image_utils.draw_image_detection_boxes(color_image, boxes, score, labels, class_name=class_name,
-                                                             thickness=thickness, fontScale=fontScale)
+                                                             thickness=thickness, fontScale=fontScale,
+                                                             drawType="chinese")
         vis_image = image_utils.image_hstack([image, mask, color_image, color_mask])
         if vis:
             image_utils.cv_show_image("image", color_image, delay=10)
@@ -125,6 +126,11 @@ def parse_opt():
     # weights = "data/model/pretrained/yolov8n-seg.pt"
     weights = "output/detect/train/weights/best.pt"
     # weights = "output/detect/train/weights/best.engine"
+
+    # AIJE
+    image_dir = '/home/PKing/nasdata/dataset-dmai/AIJE/bug'
+    weights = "/home/PKing/nasdata/release/edu-engineering/yolov8/output/segment/train/weights/best.pt"
+    # save images
     out_dir = image_dir + "_result"
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=weights, help='model.pt')
