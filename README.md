@@ -51,6 +51,7 @@ else:
     return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
 
 ```
+  ![](docs/img003.png)
 
 ### (2) DDP ADD Argument
 
