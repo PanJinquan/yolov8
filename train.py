@@ -62,7 +62,10 @@ class Trainer(object):
                     'uuid': ''
                     }
         settings.update(**self.env)
-        self.model = YOLO(self.opt.model).load(self.opt.weights)  # build from YAML and transfer weights
+        self.model = YOLO(self.opt.model)
+        self.pretrained = self.get_pretrained(self.opt.model)
+        if self.pretrained:
+            self.model = self.model.load(self.pretrained)  # build from YAML and transfer weights
         self.names = self.model.names
         print("settings env          :{}".format(self.env))
         print("ROOT                  :{}".format(ROOT))
@@ -70,6 +73,24 @@ class Trainer(object):
         print("GITHUB_ASSET_STEMS    :{}".format(downloads.GITHUB_ASSETS_STEMS))
         print("model num class       :{}".format(len(self.names)))
         print("parser argument       :{}".format(self.opt))
+
+    def get_pretrained(self, model_nanme: str):
+        """
+        https://github.com/ultralytics/ultralytics
+        :param model_nanme:
+        :return:
+        """
+        nanme = os.path.basename(model_nanme).split(".")[0].lower()
+        weights = {
+            "yolov8-seg":  "data/model/pretrained/yolov8n-seg.pt",
+            "yolov8n-seg": "data/model/pretrained/yolov8n-seg.pt",
+            "yolov8s-seg": "data/model/pretrained/yolov8s-seg.pt",
+            "yolov8m-seg": "data/model/pretrained/yolov8m-seg.pt",
+            "yolov8l-seg": "data/model/pretrained/yolov8l-seg.pt",
+            "yolov8x-seg": "data/model/pretrained/yolov8x-seg.pt",
+        }
+        pretrained = weights[nanme] if nanme in weights else ""
+        return pretrained
 
     def run(self, ):
         """
@@ -85,11 +106,11 @@ def parse_opt():
     :return:
     """
     # model = "cfg/models/v8/yolov8-seg.yaml"
-    model = "cfg/models/v8/yolov8l-seg.yaml"
-    weights = "data/model/pretrained/yolov8-seg.pt"
+    model = "cfg/models/v8/yolov8m-seg.yaml"
+    weights = "data/model/pretrained/yolov8m-seg.pt"
     # data = "cfg/datasets/coco-data-seg.yaml"
-    # data = "cfg/datasets/coco-aije-seg.yaml"
-    data = "cfg/datasets/coco-data-seg-local.yaml"
+    data = "cfg/datasets/coco-aije-seg.yaml"
+    # data = "cfg/datasets/coco-data-seg-local.yaml"
     cfg = "cfg/segment-hyp.yaml"
     #
     # model = "cfg/models/v8/yolov8s.yaml"
@@ -105,7 +126,7 @@ def parse_opt():
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
     parser.add_argument('--batch', default=64, type=int, help='batch size')
     parser.add_argument('--epochs', default=300, type=int, help='number of epochs to train for')
-    parser.add_argument('--device', default="0", type=str, help='GPU ID,--device=0,1,2')
+    parser.add_argument('--device', default="7,6,5,4", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')
     parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()
