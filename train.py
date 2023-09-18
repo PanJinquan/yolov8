@@ -23,8 +23,8 @@ sys.path.insert(0, (os.path.dirname(__file__)))
 import argparse
 import numpy as np
 import cv2
-import ultralytics
 from easydict import EasyDict
+from ultralytics.nn.tasks import parse_model
 from ultralytics import YOLO
 from ultralytics.utils import downloads, ROOT, DEFAULT_CFG_PATH
 from ultralytics.models.yolo.detect import DetectionTrainer  # build_dataset
@@ -84,11 +84,12 @@ def parse_opt():
     DDP多卡训练时，Argument命令行参数会失效
     :return:
     """
-    model = "cfg/models/v8/yolov8-seg.yaml"
-    weights = "data/model/pretrained/yolov8n-seg.pt"
+    # model = "cfg/models/v8/yolov8-seg.yaml"
+    model = "cfg/models/v8/yolov8l-seg.yaml"
+    weights = "data/model/pretrained/yolov8-seg.pt"
     # data = "cfg/datasets/coco-data-seg.yaml"
-    data = "cfg/datasets/coco-aije-seg.yaml"
-    # data = "cfg/datasets/coco-data-seg-local.yaml"
+    # data = "cfg/datasets/coco-aije-seg.yaml"
+    data = "cfg/datasets/coco-data-seg-local.yaml"
     cfg = "cfg/segment-hyp.yaml"
     #
     # model = "cfg/models/v8/yolov8s.yaml"
@@ -104,7 +105,7 @@ def parse_opt():
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
     parser.add_argument('--batch', default=64, type=int, help='batch size')
     parser.add_argument('--epochs', default=300, type=int, help='number of epochs to train for')
-    parser.add_argument('--device', default="3,4,5,6", type=str, help='GPU ID,--device=0,1,2')
+    parser.add_argument('--device', default="0", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')
     parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()

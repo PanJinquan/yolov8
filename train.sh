@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# DDP多卡训练时，Argument命令行参数会失效
 # Instance segmentation
 model="cfg/models/v8/yolov8-seg.yaml"
 weights="data/model/pretrained/yolov8n-seg.pt"

@@ -6,6 +6,24 @@
 - [x] 支持VOC数据训练
 - [ ] 支持TensorRT推理
 
+
+
+- `ultralytics`会根据模型文件名称，来判断模型属于`n,s,m,l,x`，如果判断失败则默认为`n`,见`ultralytics/nn/tasks.py`
+    ```yaml
+      n: [ 0.33, 0.25, 1024 ]
+      s: [ 0.33, 0.50, 1024 ]
+      m: [ 0.67, 0.75, 768 ]
+      l: [ 1.00, 1.00, 512 ]
+      x: [ 1.00, 1.25, 512 ]
+    ```
+  
+| 模型            |  参数量                                                   |    说明          |
+|:--------------:|:---------------------------------------------------------:|:----------------|
+|  YOLOv8m-seg   | 331 layers, 27240806 parameters, 27240790 gradients       |                  | 
+|  YOLOv8n-seg   | 261 layers,  3264006 parameters,  3263990 gradients       |                  | 
+
+
+
 ## 1.Requirements
 
 - [requirements](requirements.txt),use `pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
@@ -98,14 +116,6 @@ python train.py --model $model --weights $weights --data $data --cfg $cfg
 
 ## 4.使用说明
 
-- `ultralytics`会根据模型文件名称，来判断模型属于`n,s,m,l,x`，如果判断失败则默认为`n`,见`ultralytics/nn/tasks.py`
-    ```yaml
-      n: [ 0.33, 0.25, 1024 ]
-      s: [ 0.33, 0.50, 1024 ]
-      m: [ 0.67, 0.75, 768 ]
-      l: [ 1.00, 1.00, 512 ]
-      x: [ 1.00, 1.25, 512 ]
-    ```
 
 - 关于`自动混合精度`(Automatic Mixed Precision,AMP)
 
