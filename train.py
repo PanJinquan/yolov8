@@ -124,7 +124,7 @@ def parse_opt():
     parser.add_argument('--weights', type=str, default=weights, help='model weights file')
     parser.add_argument('--data', type=str, default=data, help='dta *.yaml file')
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
-    parser.add_argument('--batch', default=64, type=int, help='batch size')
+    parser.add_argument('--batch', default=32, type=int, help='batch size')
     parser.add_argument('--epochs', default=300, type=int, help='number of epochs to train for')
     parser.add_argument('--device', default="7,6,5,4", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')

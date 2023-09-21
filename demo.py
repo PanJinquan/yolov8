@@ -129,7 +129,7 @@ def parse_opt():
 
     # AIJE
     image_dir = '/home/PKing/nasdata/dataset-dmai/AIJE/bug'
-    weights = "/home/PKing/nasdata/release/edu-engineering/yolov8/output/segment/train/weights/best.pt"
+    weights = "output/segment/train2/weights/best.pt"
     # save images
     out_dir = image_dir + "_result"
     parser = argparse.ArgumentParser()
