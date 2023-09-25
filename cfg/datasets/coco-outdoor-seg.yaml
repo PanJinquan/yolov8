@@ -1,0 +1,24 @@
+# Ultralytics YOLO 🚀, AGPL-3.0 license
+# COCO128-seg dataset https://www.kaggle.com/ultralytics/coco128 (first 128 images from COCO train2017) by Ultralytics
+# Example usage: yolo train data=coco128.yaml
+# parent
+# ├── ultralytics
+# └── datasets
+#     └── coco128-seg  ← downloads here (7 MB)
+
+
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+data_type: "COCO"
+path: ""  # dataset root dir
+train:
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v1/train-coco.json"
+val: "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v1/val-coco.json"
+test:  # test images (optional)
+
+# Classes
+#names:
+names: [ '手', '未穿工作服,身穿工作服' , '其他鞋,绝缘鞋', '安全带', '安全帽', '安全绳',
+         '垫子', '绝缘手套','主杆', '柱式绝缘子', '抹布', '吊物绳', '脚扣', '尖嘴钳', '扳手',
+         '螺丝', '铁架', '工具袋', '铝扎线', '导线头','遮拦杆', '止步高压危险标示牌', '从此进出标示牌', '在此工作标示牌' ]
+# Download script/URL (optional)
+#download: https://ultralytics.com/assets/coco128-seg.zip

@@ -82,7 +82,7 @@ class Trainer(object):
         """
         nanme = os.path.basename(model_nanme).split(".")[0].lower()
         weights = {
-            "yolov8-seg":  "data/model/pretrained/yolov8n-seg.pt",
+            "yolov8-seg": "data/model/pretrained/yolov8n-seg.pt",
             "yolov8n-seg": "data/model/pretrained/yolov8n-seg.pt",
             "yolov8s-seg": "data/model/pretrained/yolov8s-seg.pt",
             "yolov8m-seg": "data/model/pretrained/yolov8m-seg.pt",
@@ -109,7 +109,8 @@ def parse_opt():
     model = "cfg/models/v8/yolov8m-seg.yaml"
     weights = "data/model/pretrained/yolov8m-seg.pt"
     # data = "cfg/datasets/coco-data-seg.yaml"
-    data = "cfg/datasets/coco-aije-seg.yaml"
+    # data = "cfg/datasets/coco-indoor-seg.yaml"
+    data = "cfg/datasets/coco-outdoor-seg.yaml"
     # data = "cfg/datasets/coco-data-seg-local.yaml"
     cfg = "cfg/segment-hyp.yaml"
     #
@@ -126,7 +127,7 @@ def parse_opt():
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
     parser.add_argument('--batch', default=32, type=int, help='batch size')
     parser.add_argument('--epochs', default=300, type=int, help='number of epochs to train for')
-    parser.add_argument('--device', default="7,6,5,4", type=str, help='GPU ID,--device=0,1,2')
+    parser.add_argument('--device', default="3,4,5,0", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')
     parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()
