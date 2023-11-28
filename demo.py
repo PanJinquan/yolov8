@@ -11,25 +11,28 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.dirname(__file__))
 import argparse
 import numpy as np
 import cv2
+import torch
 from ultralytics import YOLO
 from ultralytics.engine.results import Results
 from pybaseutils import image_utils, file_utils, color_utils, time_utils
 
 
 class YOLOv8(object):
-    def __init__(self, weights: str, use_onnx=False, use_trt=False):
+    def __init__(self, weights: str, task='segment', use_onnx=False, use_trt=False, use_half=True):
         """
         :param weights:
+        :param task: is 'detect', 'segment', 'classify', 'pose'
         :param use_onnx:
         :param use_trt: 预处理中使用了LetterBox进行自适应缩放图像，如果使用TRT推理，YOLOv8只适配了(640,640)
                         因此使用TRT推理效果变差
         """
+        self.use_half = use_half
         use_torch = weights.endswith(".pt") or weights.endswith(".pth")
-        self.model = YOLO(weights)  # load an  model
+        self.model = YOLO(weights, task=task)  # load an  model
         if use_torch: self.export_onnx(use_onnx=use_onnx, use_trt=use_trt)
         self.names = self.model.names
         print("weights   :{}".format(weights))
@@ -45,23 +48,33 @@ class YOLOv8(object):
             self.model.export(format='onnx', simplify=True, dynamic=True)  # ONNX
             file = str(self.model.ckpt_path).replace(".pth", ".onnx").replace(".pt", ".onnx")
         if use_trt:
-            self.model.export(format='engine', simplify=True, dynamic=True, half=False, device=0)  # TensorRT
+            # self.model.export(format='engine', simplify=True, dynamic=True, half=False, device=0)  # TensorRT
+            self.model.export(format='engine', simplify=True, dynamic=False, half=self.use_half, device=0)  # TensorRT
             file = str(self.model.ckpt_path).replace(".pth", ".engine").replace(".pt", ".engine")
         return file
 
     def inference(self, image, vis=False):
         """
+        推理参数：https://docs.ultralytics.com/modes/predict/#inference-arguments
+        Inference arguments:source,conf,iou,imgsz
         :param image:
         :return:
         """
         # from ultralytics.models.yolo.segment.predict import SegmentationPredictor# postprocess
         # import ultralytics.engine.predictor
-        results = self.model.predict(source=image, save=False)
-        results = self.post_process(results)
+        results = self.model.predict(source=image, save=False, half=self.use_half, verbose=True)
+        results = self.post_process(results, do_segm=vis, do_mask=vis)
         if vis: self.draw_result(results)
         return results
 
-    def post_process(self, results):
+    def post_process(self, results, do_segm=True, do_mask=False):
+        """
+        当masks较大时，后处理比较耗时
+        :param results:
+        :param do_segm: 是否返回segm,比较耗时，仅显示时，才计算segm
+        :param do_mask: 是否返回mask,比较耗时，仅显示时，才计算mask
+        :return:
+        """
         outs = []
         for r in results:
             image = r.orig_img
@@ -69,17 +82,15 @@ class YOLOv8(object):
             boxes = np.asarray(r.boxes.xyxy.cpu().numpy(), dtype=np.float32)
             label = np.asarray(r.boxes.cls.cpu().numpy(), dtype=np.int32)
             score = np.asarray(r.boxes.conf.cpu().numpy(), dtype=np.float32)
-            if r.masks is None:
-                # masks = np.zeros(shape=(1, h, w), dtype=np.uint8)
-                masks = None
-                segms = []
-            else:
+            masks = None
+            segms = []
+            if do_segm and r.masks:
+                segms = r.masks.xyn  # segms = r.masks.segments 归一化坐标，计算比较耗时
+            if do_mask and r.masks:
+                # mask处理比较耗时
                 masks = np.asarray(r.masks.data.cpu().numpy(), dtype=np.int32)
-                # segms = r.masks.segments
-                segms = r.masks.xyn  # 归一化
                 for i in range(len(label)):
                     masks[i, :, :] = masks[i, :, :] * (label[i] + 1)
-                    # segms[i] = [np.asarray(segms[i] * (w, h), dtype=np.int32)]
             outs.append({"boxes": boxes, "label": label, "score": score, "segms": segms,
                          "masks": masks, "size": [w, h], "image": image,
                          })
@@ -87,7 +98,7 @@ class YOLOv8(object):
 
     def detect_image_dir(self, image_dir, out_dir=None, vis=True):
         # Dataloader
-        dataset = file_utils.get_files_lists(image_dir, shuffle=False)
+        dataset = file_utils.get_files_lists(image_dir, shuffle=True)
         # Run inference
         for file in dataset:
             image = cv2.imread(file)  # BGR
@@ -162,15 +173,16 @@ def parse_opt():
     image_dir = 'data/test_image'
     image_dir = '/media/PKing/新加卷1/SDK/base-utils/data/coco/JPEGImages'
     # weights = "data/model/pretrained/yolov8n-seg.pt"
-    weights = "output/segment/outdoor/yolov8m-seg-v3/weights/best.pt"
+    weights = "output/detect/train/weights/best.pt"
     # weights = "output/detect/train/weights/best.engine"
 
     # AIJE
     image_dir = '/home/PKing/nasdata/dataset-dmai/AIJE/bug'
     weights = "output/segment/train2/weights/best.pt"
-    image_dir = '/home/PKing/nasdata/dataset-dmai/AIJE/test_data/室外/badcase数据/badcase对应原始数据/hand_helmet'
+    image_dir = "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v1/JPEGImages"
     # image_dir = "data/bus.jpg"
-    weights = "/home/PKing/nasdata/release/AIJE/aije-algorithm/aije-equipment-detection/app/infercore/resource/outdoor_yolov8m_equipment.pt"
+    weights = "/home/PKing/nasdata/release/edu-engineering/yolov8/output/segment/outdoor/yolov8m-seg/weights/best.engine"
+    # weights = "/home/PKing/nasdata/release/edu-engineering/yolov8/output/segment/outdoor/yolov8m-seg/weights/best.pt"
     # save images
     out_dir = image_dir + "_result"
     parser = argparse.ArgumentParser()
