@@ -12,6 +12,8 @@ data_type: "COCO"
 path: ""  # dataset root dir
 train:
   - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v1/train-coco.json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v2/train-coco.json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v3/train-coco.json"
 val: "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-outdoor-det/dataset-v1/val-coco.json"
 test:  # test images (optional)
 
