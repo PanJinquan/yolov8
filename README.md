@@ -27,7 +27,8 @@
 ## 1.Requirements
 
 - [requirements](requirements.txt),use `pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
-- pip install ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
+- pip install --upgrade ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
+- ultralytics==8.1.9
 - ultralytics commit id : 6da8f7f51e985cb3b4f42043f1791fe8a7368c9b
 
 ```bash
