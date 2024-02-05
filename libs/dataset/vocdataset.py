@@ -13,25 +13,25 @@ from pybaseutils import image_utils, file_utils, json_utils, yaml_utils
 from pybaseutils.dataloader import parser_voc
 
 
-def build_voc_dataset(cfg, img_path, batch, data, mode='train', rect=False, stride=32):
-    """Build COCO Dataset"""
+def build_voc_dataset(cfg, img_path, batch, data, mode="train", rect=False, stride=32):
+    """Build VOC Dataset."""
     return VOCDataset(
         img_path=img_path,
         imgsz=cfg.imgsz,
         batch_size=batch,
-        augment=mode == 'train',  # augmentation
+        augment=mode == "train",  # augmentation
         hyp=cfg,  # TODO: probably add a get_hyps_from_cfg function
         rect=cfg.rect or rect,  # rectangular batches
         cache=cfg.cache or None,
         single_cls=cfg.single_cls or False,
         stride=int(stride),
-        pad=0.0 if mode == 'train' else 0.5,
-        prefix=colorstr(f'{mode}: '),
-        use_segments=cfg.task == 'segment',
-        use_keypoints=cfg.task == 'pose',
+        pad=0.0 if mode == "train" else 0.5,
+        prefix=colorstr(f"{mode}: "),
+        task=cfg.task,
         classes=cfg.classes,
         data=data,
-        fraction=cfg.fraction if mode == 'train' else 1.0)
+        fraction=cfg.fraction if mode == "train" else 1.0,
+    )
 
 
 class VOCDataset(YOLODataset):
@@ -48,17 +48,16 @@ class VOCDataset(YOLODataset):
     """
     cache_version = '1.0.2'  # dataset labels *.cache version, >= 1.0.0 for YOLOv8
 
-    def __init__(self, *args, data=None, use_segments=False, use_keypoints=False, **kwargs):
+    def __init__(self, *args, data=None, task="detect", **kwargs):
         self.unique = False
-        self.use_segments = use_segments
-        self.use_keypoints = use_keypoints
+        self.use_obb = task == "obb"
+        self.data = data
         # self.class_dict = {n: i for i, n in data['names'].items()}
         self.class_dict = self.parser_classes(data['names'])
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
         anno_file = kwargs["img_path"]
         self.voc = parser_voc.VOCDatasets(filename=anno_file, image_dir=None, class_name=self.class_dict, check=True)
-        assert not (self.use_segments and self.use_keypoints), 'Can not use both segments and keypoints.'
-        super().__init__(*args, data=data, use_segments=use_segments, use_keypoints=use_keypoints, **kwargs)
+        super().__init__(*args, data=data, task=task, **kwargs)
 
     def parser_classes(self, names: dict):
         class_dict = {}

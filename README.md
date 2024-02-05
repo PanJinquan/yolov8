@@ -130,3 +130,8 @@ python train.py --model $model --weights $weights --data $data --cfg $cfg
 - https://docs.ultralytics.com/tasks/segment
 - https://docs.ultralytics.com/tasks/pose/
 - 训练方法： https://github.com/ultralytics/ultralytics/blob/main/docs/modes/train.md
+
+
+
+## 5.数据标注
+-  OOB(oriented bounding box)旋转框标注: https://zhuanlan.zhihu.com/p/430850089?utm_id=0

@@ -110,8 +110,9 @@ def parse_opt():
     weights = "data/model/pretrained/yolov8m-seg.pt"
     # data = "cfg/datasets/coco-data-seg.yaml"
     # data = "cfg/datasets/coco-indoor-seg.yaml"
-    data = "cfg/datasets/coco-outdoor-seg.yaml"
-    # data = "cfg/datasets/coco-data-seg-local.yaml"
+    # data = "cfg/datasets/coco-outdoor-seg.yaml"
+    data = "cfg/datasets/coco-data-seg-local.yaml"
+    # data = "cfg/datasets/coco128-seg-local.yaml"
     cfg = "cfg/segment-hyp.yaml"
     #
     # model = "cfg/models/v8/yolov8s.yaml"
@@ -125,9 +126,10 @@ def parse_opt():
     parser.add_argument('--weights', type=str, default=weights, help='model weights file')
     parser.add_argument('--data', type=str, default=data, help='dta *.yaml file')
     parser.add_argument('--cfg', type=str, default=cfg, help='cfg hyp file')
-    parser.add_argument('--batch', default=32, type=int, help='batch size')
+    parser.add_argument('--batch', default=4, type=int, help='batch size')
     parser.add_argument('--epochs', default=300, type=int, help='number of epochs to train for')
-    parser.add_argument('--device', default="0,1,2,3", type=str, help='GPU ID,--device=0,1,2')
+    # parser.add_argument('--device', default="0,1,2,3", type=str, help='GPU ID,--device=0,1,2')
+    parser.add_argument('--device', default="0", type=str, help='GPU ID,--device=0,1,2')
     parser.add_argument('--workers', default=8, type=int, help='number of worker threads')
     parser.add_argument('--output', type=str, default="output", help='output')
     opt = parser.parse_args()
