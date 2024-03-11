@@ -11,11 +11,14 @@
 data_type: "labelme"
 path: ""  # dataset root dir
 train:
-  - "/media/PKing/新加卷1/SDK/base-utils/data/coco/json"
-  - "/media/PKing/新加卷1/SDK/base-utils/data/coco/json"
-  - "/media/PKing/新加卷1/SDK/base-utils/data/coco/json"
+  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/json"
+  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v2/json"
+  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v3/json"
+  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v4/json"
+  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v5/json"
+  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v6/json"
 
-val: "/media/PKing/新加卷1/SDK/base-utils/data/coco/json"
+val: "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-test/json"
 test:  # test images (optional)
 
 # Classes
@@ -24,7 +27,7 @@ test:  # test images (optional)
 #  1: car
 #  2: person
 
-names: [ 'dog,car','person' ]
+names: [ '手', '护目镜', '未穿工作服,身穿工作服', '其他鞋,绝缘鞋', '安全带', '安全帽', '绝缘垫', '绝缘手套', '万用表', '万用表线头', '相序表', '相序表线头', '钳形电流表', '电能表', '尖嘴钳', '验电笔', '螺丝刀', '接线盒', '电流互感器', '表箱关,表箱开', '竹梯', '准备区域', '工作台' ]
 #names: [ 'dog','car','person' ]
 
 

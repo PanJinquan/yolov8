@@ -57,11 +57,10 @@ class LabelmeDataset(YOLODataset):
         self.class_dict = self.parser_classes(data['names'])
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
         anno_dir = kwargs["img_path"]  # 图片目录和标注文件(*.json同目录)
-        image_dir = kwargs["img_path"]
         self.data_parser = parser_labelme.LabelMeDatasets(anno_dir=anno_dir,
-                                                          image_dir=image_dir,
+                                                          image_dir=None,
                                                           class_name=self.class_dict,
-                                                          check=False)
+                                                          check=True)
         super().__init__(*args, data=data, task=task, **kwargs)
 
     def parser_classes(self, names: dict):
