@@ -57,18 +57,22 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple nvidia-pyindex nvidia-te
 ```python
 from ultralytics.models.yolo.detect.train import DetectionTrainer
 
-gs = max(int(de_parallel(self.model).stride.max() if self.model else 0), 32)
-if self.data.get('data_type') == "COCO":
-    from libs.dataset.cocodataset import build_coco_dataset
 
-    return build_coco_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
-elif self.data.get('data_type') == "VOC":
-    from libs.dataset.vocdataset import build_voc_dataset
+        gs = max(int(de_parallel(self.model).stride.max() if self.model else 0), 32)
+        if self.data.get('data_type').lower() == "coco":
+            from libs.dataset.cocodataset import build_coco_dataset
 
-    return build_voc_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
-else:
-    return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+            return build_coco_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+        elif self.data.get('data_type').lower() == "voc":
+            from libs.dataset.vocdataset import build_voc_dataset
 
+            return build_voc_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+        elif self.data.get('data_type').lower() == "lalelme":
+            from libs.dataset.lalelmedataset import build_labelme_dataset
+
+            return build_labelme_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
+        else:
+            return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == "val", stride=gs)
 ```
   ![](docs/img003.png)
 

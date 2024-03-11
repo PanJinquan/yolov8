@@ -56,7 +56,7 @@ class COCODataset(YOLODataset):
         self.class_dict = self.parser_classes(data['names'])
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
         anno_file = kwargs["img_path"]
-        self.coco = parser_coco_ins.CocoInstances(anno_file, image_dir=None, class_name=self.class_dict, decode=False)
+        self.data_parser = parser_coco_ins.CocoInstances(anno_file, image_dir=None, class_name=self.class_dict, decode=False)
         super().__init__(*args, data=data, task=task, **kwargs)
 
     def parser_classes(self, names: dict):
@@ -86,8 +86,8 @@ class COCODataset(YOLODataset):
         """
         labels = []
         # for files_info, annos_info in zip(self.coco.files_info, self.coco.annos_info):
-        for i in range(len(self.coco.image_ids)):
-            data_info = self.coco.__getitem__(i)
+        for i in range(len(self.data_parser.image_ids)):
+            data_info = self.data_parser.__getitem__(i)
             im_file = data_info["image_file"]
             w, h = data_info['size']
             # boxes, cls, mask, segs = self.coco.get_object_instance(annos_info, h, w, decode=False)

@@ -6,16 +6,17 @@
     @Brief  :
 """
 import os
+import numpy as np
 from ultralytics.utils import RANK, colorstr
 from ultralytics.data.dataset import YOLODataset
 from ultralytics.data.utils import HELP_URL, LOGGER
 from pybaseutils import image_utils, file_utils, json_utils, yaml_utils
-from pybaseutils.dataloader import parser_voc
+from pybaseutils.dataloader import parser_labelme
 
 
-def build_voc_dataset(cfg, img_path, batch, data, mode="train", rect=False, stride=32):
+def build_labelme_dataset(cfg, img_path, batch, data, mode="train", rect=False, stride=32):
     """Build VOC Dataset."""
-    return VOCDataset(
+    return LabelmeDataset(
         img_path=img_path,
         imgsz=cfg.imgsz,
         batch_size=batch,
@@ -34,7 +35,7 @@ def build_voc_dataset(cfg, img_path, batch, data, mode="train", rect=False, stri
     )
 
 
-class VOCDataset(YOLODataset):
+class LabelmeDataset(YOLODataset):
     """
     Dataset class for loading object detection and/or segmentation labels in YOLO format.
 
@@ -55,9 +56,12 @@ class VOCDataset(YOLODataset):
         # self.class_dict = {n: i for i, n in data['names'].items()}
         self.class_dict = self.parser_classes(data['names'])
         # image_dir = os.path.join(os.path.dirname(kwargs['img_path']), "person")
-        anno_file = kwargs["img_path"]
-        self.data_parser = parser_voc.VOCDatasets(filename=anno_file, image_dir=None, class_name=self.class_dict,
-                                                  check=True)
+        anno_dir = kwargs["img_path"]  # 图片目录和标注文件(*.json同目录)
+        image_dir = kwargs["img_path"]
+        self.data_parser = parser_labelme.LabelMeDatasets(anno_dir=anno_dir,
+                                                          image_dir=image_dir,
+                                                          class_name=self.class_dict,
+                                                          check=False)
         super().__init__(*args, data=data, task=task, **kwargs)
 
     def parser_classes(self, names: dict):
@@ -89,19 +93,21 @@ class VOCDataset(YOLODataset):
             data_info = self.data_parser.__getitem__(i)
             im_file = data_info['image_file']
             w, h = data_info['size']
-            targets = data_info["target"]
-            if len(targets) == 0: continue  # 是否要去除无目标的数据，不去除好像也没有报错
-            boxes, cls = targets[:, 0:4], targets[:, 4:5]
+            boxes = np.array(data_info["boxes"])
+            cls = np.array(data_info["labels"])
+            segs = data_info["points"]
+            if len(boxes) == 0: continue  # 是否要去除无目标的数据，不去除好像也没有报错
             # 将(x,y,x,y)转为(x_center y_center width height)，见ultralytics.utils.instance
             cxcywh = image_utils.xyxy2cxcywh(boxes) / (w, h, w, h)
             cls = cls.reshape(-1, 1)
-            # segs = [s[0] / (w, h) for s in segs]
+            if self.use_obb: segs = image_utils.find_minAreaRect(segs)
+            segs = [s / (w, h) for s in segs]
             item = {
                 "im_file": im_file,
                 "shape": (h, w),
                 "cls": cls,
                 "bboxes": cxcywh,
-                "segments": [],
+                "segments": segs,
                 "keypoints": None,
                 "normalized": True,
                 "bbox_format": "xywh",  # YOLO中xywh指的是(x_center y_center width height)

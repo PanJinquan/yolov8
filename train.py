@@ -111,7 +111,8 @@ def parse_opt():
     # data = "cfg/datasets/coco-data-seg.yaml"
     # data = "cfg/datasets/coco-indoor-seg.yaml"
     # data = "cfg/datasets/coco-outdoor-seg.yaml"
-    data = "cfg/datasets/coco-data-seg-local.yaml"
+    # data = "cfg/datasets/coco-data-seg-local.yaml"
+    data = "cfg/datasets/labelme-data-seg-local.yaml"
     # data = "cfg/datasets/coco128-seg-local.yaml"
     cfg = "cfg/segment-hyp.yaml"
     #
