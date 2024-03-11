@@ -5,7 +5,7 @@
     @Date   : 2024-02-04 17:21:01
     @Brief  :
 """
-# from ultralytics import YOLO
+from ultralytics import YOLO
 from ultralytics.models.yolo.detect.train import DetectionTrainer
 
 
@@ -45,6 +45,6 @@ def test_det():
 
 
 if __name__ == "__main__":
-    # test_obb()
-    train_obb()
+    test_obb()
+    # train_obb()
     # test_det()
