@@ -4,9 +4,8 @@
 
 - [x] 支持COCO数据训练
 - [x] 支持VOC数据训练
+- [x] 支持lableme数据训练
 - [x] 支持TensorRT推理
-
-
 
 `ultralytics`会根据模型文件名称，来判断模型属于`n,s,m,l,x`，如果判断失败则默认为`n`,见`ultralytics/nn/tasks.py`
     ```yaml
