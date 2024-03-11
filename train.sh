@@ -4,9 +4,10 @@
 model="cfg/models/v8/yolov8-seg.yaml"
 weights="data/model/pretrained/yolov8n-seg.pt"
 #data="cfg/datasets/coco-data-seg.yaml"
-data="cfg/datasets/coco-aije-seg.yaml"
+#data="cfg/datasets/coco-aije-seg.yaml"
+data="cfg/datasets/labelme-data-seg.yaml"
 cfg="cfg/segment-hyp.yaml"
-python train.py --device 4 --model $model --weights $weights --data $data --batch 8 --cfg $cfg
+python train.py --model $model --weights $weights --data $data --batch 32 --cfg $cfg
 
 
 # object detection

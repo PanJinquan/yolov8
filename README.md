@@ -75,6 +75,7 @@ from ultralytics.models.yolo.detect.train import DetectionTrainer
 ```
   ![](docs/img003.png)
 
+- 源码修改完，再次`cd ultralytics`安装：`pip install -e .`
 ### (2) DDP ADD Argument
 
 DDP多卡训练时，Argument命令行参数会失效：

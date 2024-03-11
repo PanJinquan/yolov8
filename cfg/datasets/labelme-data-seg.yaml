@@ -11,14 +11,14 @@
 data_type: "labelme"
 path: ""  # dataset root dir
 train:
-  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v2/json"
-  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v3/json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v4/json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v5/json"
-#  - "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v6/json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v1/json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v2/json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v3/json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v4/json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v5/json"
+  - "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-v6/json"
 
-val: "/home/PKing/nasdata/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-test/json"
+val: "/nasdata/atp/data/panjinquan/dataset-dmai/AIJE/dataset/aije-indoor-det/dataset-test/json"
 test:  # test images (optional)
 
 # Classes
