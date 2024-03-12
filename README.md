@@ -56,29 +56,29 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple nvidia-pyindex nvidia-te
 ```python
 from ultralytics.models.yolo.detect.train import DetectionTrainer
 
-
         gs = max(int(de_parallel(self.model).stride.max() if self.model else 0), 32)
         if self.data.get('data_type').lower() == "coco":
-            from libs.dataset.cocodataset import build_coco_dataset
+            from ultralytics.libs.dataset.cocodataset import build_coco_dataset
 
             return build_coco_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
         elif self.data.get('data_type').lower() == "voc":
-            from libs.dataset.vocdataset import build_voc_dataset
+            from ultralytics.libs.dataset.vocdataset import build_voc_dataset
 
             return build_voc_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
-        elif self.data.get('data_type').lower() == "lalelme":
-            from libs.dataset.lalelmedataset import build_labelme_dataset
+        elif self.data.get('data_type').lower() == "labelme":
+            from ultralytics.libs.dataset.lalelmedataset import build_labelme_dataset
 
             return build_labelme_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == 'val', stride=gs)
         else:
             return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == "val", stride=gs)
+
 ```
   ![](docs/img003.png)
 
 - 源码修改完，再次`cd ultralytics`安装：`pip install -e .`
 ### (2) DDP ADD Argument
 
-DDP多卡训练时，Argument命令行参数会失效：
+DDP多卡训练时，Argument命令行参数会失效（升级`ultralytics`到新版本，已经修复该问题）：
 - 解决方法1：使用单卡训练，Argument命令行参数可以正常使用
   ```bash
   python train.py --batch 8 # DDP多卡训练时，Argument命令行参数会失效,单卡训练正常
